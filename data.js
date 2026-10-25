@@ -194,14 +194,14 @@
     { a: 'zer', b: 'gg17', via: '★ 고르너그라트 열차 10:00', when: { wx: ['A'] } },
     { a: 'gg17', b: 'para17', via: '이륙', when: { wx: ['A'], fl: ['fly'] } },
     { a: 'para17', b: 'zh17', via: '착륙 → 걸어서', when: { wx: ['A'], fl: ['fly'] } },
-    { a: 'gg17', b: 'zh17', via: '★ 열차로 하산', bend: 40, when: { wx: ['A'], fl: ['cancel'] } },
+    { a: 'gg17', b: 'zh17', via: '★ 열차로 하산', lane: U + 60, when: { wx: ['A'], fl: ['cancel'] } },
     { a: 'zer', b: 'vill17', via: '짐 풀고 걸어서', when: { wx: ['B'] } },
     { a: 'vill17', b: 'zh17', via: '걸어서', when: { wx: ['B'] } },
 
     { a: 'zh17', b: 'gg18', via: '★ 첫 열차 07:00', when: { wx: ['B'] } },
     { a: 'gg18', b: 'para18', via: '이륙', when: { wx: ['B'], fl: ['fly'] } },
     { a: 'para18', b: 'zer18', via: '착륙 → 짐 찾기', when: { wx: ['B'], fl: ['fly'] } },
-    { a: 'gg18', b: 'zer18', via: '★ 열차로 하산', bend: 40, when: { wx: ['B'], fl: ['cancel'] } },
+    { a: 'gg18', b: 'zer18', via: '★ 열차로 하산', lane: U + 60, when: { wx: ['B'], fl: ['cancel'] } },
     { a: 'zh17', b: 'vill18', via: '걸어서', when: { wx: ['A'] } },
     { a: 'vill18', b: 'zer18', via: '걸어서', when: { wx: ['A'] } },
     { a: 'zer18', b: 'visp2', via: '기차' },
@@ -219,5 +219,5 @@
   // 사진은 앱 안(img/키.jpg)에 넣어 두고, 없으면 원본 주소에서 불러온다
   Object.keys(IMG).forEach(function (k) { IMG[k].local = 'img/' + k + '.jpg'; });
 
-  g.ROUTE = { IMG: IMG, DECISIONS: DECISIONS, DAYS: DAYS, NODES: NODES, EDGES: EDGES };
+  g.ROUTE = { M: M, IMG: IMG, DECISIONS: DECISIONS, DAYS: DAYS, NODES: NODES, EDGES: EDGES };
 })(typeof self !== 'undefined' ? self : this);

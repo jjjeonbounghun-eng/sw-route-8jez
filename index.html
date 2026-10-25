@@ -30,8 +30,8 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family
 body{padding-top:env(safe-area-inset-top,0px);display:flex;flex-direction:column;overflow:hidden}
 button{font:inherit;color:inherit}
 
-header{padding:18px 20px 10px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid #eef0f1}
-.top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+header{padding:16px 20px 12px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid #eef0f1}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
 h1{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
 .lead{margin:4px 0 0;font-size:13px;color:var(--sub)}
 .lead b{color:var(--ink);font-weight:600}
@@ -127,17 +127,15 @@ footer span:last-child{text-align:right}
   <div class="top">
     <div>
       <h1>스위스 자유여행 동선</h1>
-      <p class="lead">11/14 – 11/19 · <b>진한 길</b>이 지금 계획, 희미한 길을 누르면 그 계획으로 바뀝니다 · 점에 올리면 사진</p>
     </div>
     <div class="acts">
       <button class="btn" id="reset" type="button">기본 계획</button>
       <button class="btn dark" id="share" type="button">이 계획 링크 보내기</button>
     </div>
   </div>
-  <div class="decs" id="decs"></div>
 </header>
 <div class="stage"><div class="scroller" id="sc"><svg id="map" xmlns="http://www.w3.org/2000/svg"></svg></div></div>
-<footer><span>★ 6일권 말고 따로 사는 표 · 시각은 2026-10 조회값, 출발 1주 전 SBB 앱으로 재확인</span><span id="off">오프라인 준비 확인 중</span></footer>
+<footer><span>진한 길 = 지금 계획 · 희미한 길을 누르면 바뀜 · 점에 사진 · ★ 따로 사는 표</span><span id="off">오프라인 준비 확인 중</span></footer>
 
 <div class="card" id="card" role="dialog" aria-live="polite">
   <div class="phw"><img alt=""><span class="sat" hidden>항공사진</span></div>
@@ -186,11 +184,26 @@ footer span:last-child{text-align:right}
     var t2 = el('text',{class:'day-h',x:x+16,y:54},gDays); t2.textContent = d[2];
   });
 
+  // 길 모양: 갈라질 때 짧은 S자 굴곡 → 줄을 따라 평평 → 합칠 때 짧은 S자 굴곡 (굴곡 폭은 모두 같게)
+  var BW = 64, MID = R.M;
+  function laneOf(e){
+    var a=byId[e.a], b=byId[e.b];
+    if(e.lane!=null) return e.lane;
+    if(e.bend) return a.y+e.bend;
+    if(a.y===b.y) return a.y;
+    return Math.abs(a.y-MID) > Math.abs(b.y-MID) ? a.y : b.y;
+  }
+  function sb(x0,y0,x1,y1){ var m=(x0+x1)/2; return ' C'+m+','+y0+' '+m+','+y1+' '+x1+','+y1; }
   function pathOf(e){
-    var a=byId[e.a], b=byId[e.b], dx=b.x-a.x, bend=e.bend||0;
-    var c1x=a.x+dx*.5, c1y=a.y+bend, c2x=b.x-dx*.5, c2y=b.y+bend;
-    e._mid = [ .125*a.x+.375*c1x+.375*c2x+.125*b.x, .125*a.y+.375*c1y+.375*c2y+.125*b.y ];
-    return 'M'+a.x+','+a.y+' C'+c1x+','+c1y+' '+c2x+','+c2y+' '+b.x+','+b.y;
+    var a=byId[e.a], b=byId[e.b], y=laneOf(e), dx=b.x-a.x;
+    var s1 = a.y!==y, s2 = b.y!==y, w = Math.min(BW, (dx-12)/((s1?1:0)+(s2?1:0)||1));
+    var xs = a.x + (s1?w:0), xe = b.x - (s2?w:0);
+    var d = 'M'+a.x+','+a.y;
+    if(s1) d += sb(a.x,a.y,xs,y);
+    d += ' L'+xe+','+y;
+    if(s2) d += sb(xe,y,b.x,b.y);
+    e._mid = [(xs+xe)/2, y];
+    return d;
   }
   R.EDGES.forEach(function(e,i){
     var g = el('g',{class:'e'+(/★/.test(pick(e.via))?' star':'')},gE), d = pathOf(e);
@@ -258,9 +271,9 @@ footer span:last-child{text-align:right}
     setPin(n); show(n,true);
   }
 
-  // ── 선택 막대 ──
+  // ── 선택 막대 (화면에서는 뺐음, 그래프의 갈래로 고름) ──
   var decs = document.getElementById('decs');
-  R.DECISIONS.forEach(function(d){
+  if(decs) R.DECISIONS.forEach(function(d){
     var w = document.createElement('div'); w.className='dec';
     w.innerHTML = '<span class="w"></span><div class="opts"></div>';
     w.querySelector('.w').textContent = d.when;

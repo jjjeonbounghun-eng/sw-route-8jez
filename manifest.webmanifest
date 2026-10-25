@@ -1,0 +1,15 @@
+{
+  "name": "스위스 자유여행 동선",
+  "short_name": "스위스 동선",
+  "description": "11/14~19 스위스 자유여행 동선. 갈래를 눌러 계획을 바꾸고, 장소 사진을 봅니다.",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

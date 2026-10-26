@@ -1,6 +1,6 @@
 // 오프라인 저장: 앱 화면은 열 때마다 최신으로, 못 받으면 저장본으로. 사진은 한 번 받아 두고 계속 씀
 importScripts('data.js');
-var CORE = 'swiss-route-v4', IMGC = 'swiss-route-img';
+var CORE = 'swiss-route-v5', IMGC = 'swiss-route-img';
 var FILES = ['./', 'index.html', 'data.js', 'check.js', 'manifest.webmanifest', 'icon-180.png', 'icon-192.png', 'icon-512.png'];
 var MAP = {}; // 'img/키.jpg' 전체 주소 → 원본 주소
 Object.keys(self.ROUTE.IMG).forEach(function (k) {

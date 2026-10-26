@@ -323,7 +323,7 @@ svg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
    sym('walk','<path d="M13 4m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M7 21l3 -4"/><path d="M16 21l-2 -4l-3 -3l1 -6"/><path d="M6 12l2 -3l4 -1l3 3l3 1"/>')+
    sym('plane','<path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z"/>')+
    sym('para','<path d="M22 12a10 10 0 1 0 -20 0"/><path d="M22 12c0 -1.66 -1.46 -3 -3.25 -3c-1.8 0 -3.25 1.34 -3.25 3c0 -1.66 -1.57 -3 -3.5 -3s-3.5 1.34 -3.5 3c0 -1.66 -1.46 -3 -3.25 -3c-1.8 0 -3.25 1.34 -3.25 3"/><path d="M2 12l10 10l-3.5 -10"/><path d="M15.5 12l-3.5 10l10 -10"/>');
-  var DWS = [560, 900, 760, 680, 800, 520], X0 = 260, VH = 520;
+  var DWS = [560, 900, 920, 680, 800, 520], X0 = 260, VH = 520;
   var CUM = [0]; DWS.forEach(function(w,i){ CUM.push(CUM[i]+w); });
   var VW = X0 + CUM[5] + DWS[5]*0.8 + 40;
   function X(d,f){ return X0 + CUM[d] + f*DWS[d]; }
@@ -340,8 +340,15 @@ svg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   function decode(h){
     var m = /p=([\w.]+)/.exec(h||''); if(!m) return false;
     var parts = m[1].split('.'), ok = false;
-    R.DECISIONS.forEach(function(d,i){ if(d.opts.some(function(o){return o[0]===parts[i];})){ sel[d.id]=parts[i]; ok=true; } });
+    R.DECISIONS.forEach(function(d,i){
+      if(d.opts.some(function(o){return o[0]===parts[i];})){ sel[d.id]=parts[i]; ok=true; }
+      else if(parts[i]===undefined) sel[d.id]=d.opts[0][0]; // 예전 링크·저장값엔 새 선택지가 없음 → 기본값
+    });
     return ok;
+  }
+  function norm(v){ // 계획 문자열을 지금 선택지 목록에 맞춰 (빠진 칸은 기본값)
+    var parts = String(v||'').split('.');
+    return R.DECISIONS.map(function(d,i){ return d.opts.some(function(o){return o[0]===parts[i];}) ? parts[i] : d.opts[0][0]; }).join('.');
   }
   decode(location.hash);
   var MEMO = {};
@@ -755,7 +762,7 @@ svg{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
     Object.keys(EDIT).forEach(function(k){ if(!seen[k] && !PEND[k]){ delete EDIT[k]; editNew = true; } });
     if(memoNew){ try{ localStorage.setItem('route-memo', JSON.stringify(MEMO)); }catch(e){} }
     if(editNew){ saveEdit(); closeEd(); build(); }
-    if(st.plan && !PEND.plan && st.plan.v!==encode()){ decode('p='+st.plan.v); planNew = true; } // 새 갈래가 생긴 뒤에 읽기
+    if(st.plan && !PEND.plan && norm(st.plan.v)!==encode()){ decode('p='+st.plan.v); planNew = true; } // 새 갈래가 생긴 뒤에 읽기
     if(memoNew || planNew || editNew){ render(); if(synced) say(editNew ? '일행이 일정을 고쳤어요' : planNew ? '일행이 계획을 바꿨어요' : '일행 메모가 새로 들어왔어요'); }
     synced = true;
   }
